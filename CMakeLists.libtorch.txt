@@ -1,0 +1,58 @@
+cmake_minimum_required (VERSION 3.15)
+project(libtorch-download NONE)
+
+set(TORCH_DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/downloads)
+set(TORCH_VER "2.0.0")
+
+set(TORCH_COMPUTE "cpu")
+# set(TORCH_COMPUTE "cu117")
+# set(TORCH_COMPUTE "cu118")
+
+set(TORCH_LINK "shared")
+# set(TORCH_LINK "static") # not up for 2.0?
+
+set(TORCH_DEBUG "")
+# set(TORCH_DEBUG "debug-")
+
+set(TORCH_ZIPNAME "libtorch-win-${TORCH_LINK}-with-deps-${TORCH_DEBUG}${TORCH_VER}%2B${TORCH_COMPUTE}.zip")
+set(TORCH_URL "https://download.pytorch.org/libtorch/cpu/${TORCH_ZIPNAME}")
+
+# set(TORCH_LIB_DIR "lib")
+set(TORCH_UNZIP_DIR "libtorch")
+set(TORCH_INSTALL_PREFIX "${TORCH_DOWNLOAD_DIR}/${TORCH_UNZIP_DIR}")
+
+# set(NASM_VER "2.13.03")
+# set(ZIP_FILE "master.zip")
+# set(SCITER_LINK "https://github.com/c-smile/sciter-sdk/archive/${ZIP_FILE}")
+# set(SCITER_DIR "${CMAKE_CURRENT_BINARY_DIR}/sciter-sdk")
+
+if (NOT EXISTS "${TORCH_DOWNLOAD_DIR}/${TORCH_ZIPNAME}")
+	message(STATUS "Torch : Downloading libtorch from '${TORCH_URL}'")
+	set(DOWN_LOG "")
+	set(DOWN_STATUS 0)
+	file(DOWNLOAD ${TORCH_URL} ${TORCH_DOWNLOAD_DIR}/${TORCH_ZIPNAME}
+		SHOW_PROGRESS STATUS DOWN_STATUS LOG DOWN_LOG
+	)
+
+	if (NOT (DOWN_STATUS EQUAL 0))
+		message(FATAL_ERROR "Torch : Failed to download libtorch.\n${DOWN_LOG}\n")
+		file(REMOVE ${TORCH_DOWNLOAD_DIR}/${TORCH_ZIPNAME})
+	endif()
+endif()
+
+if (NOT EXISTS ${TORCH_INSTALL_PREFIX})
+	message(STATUS "Torch : Installing libtorch to prefix '${TORCH_INSTALL_PREFIX}'")
+	execute_process(
+		COMMAND ${CMAKE_COMMAND} -E tar xzf ${TORCH_DOWNLOAD_DIR}/${TORCH_ZIPNAME}
+		WORKING_DIRECTORY ${TORCH_DOWNLOAD_DIR}
+	)
+	# file(RENAME ${TORCH_DOWNLOAD_DIR}/blabla ${TORCH_UNZIP_DIR})
+endif()
+
+# Build dll list for copying.
+set(TORCH_DLLS)
+message(STATUS "Torch : Gathering dlls")
+file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
+
+set(CMAKE_MODULE_PATH ${TORCH_INSTALL_PREFIX} ${CMAKE_MODULE_PATH})
+set(CMAKE_PREFIX_PATH ${TORCH_INSTALL_PREFIX} ${CMAKE_PREFIX_PATH})

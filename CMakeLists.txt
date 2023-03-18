@@ -1,11 +1,15 @@
 include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.fea_cmake.txt)
-cmake_minimum_required (VERSION 3.25)
+include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.libtorch.txt)
+cmake_minimum_required (VERSION 3.24)
 project(fea_ml VERSION 1.0.0 LANGUAGES CXX)
 
 include(FetchContent)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 include(GoogleTest)
+
+# message("\n\nTORCH DLLS : ${TORCH_DLLS}\n\n")
+# return()
 
 # User options
 option(FEA_ML_TESTS "Build and run tests." On)
@@ -43,6 +47,7 @@ fea_fetch_content(fea_libs
 # Pull and find our conan dependencies.
 fea_pull_conan()
 find_package(TBB CONFIG REQUIRED QUIET)
+find_package(Torch CONFIG REQUIRED QUIET)
 
 
 # Main Lib
@@ -55,7 +60,7 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "Source Files" FILES ${
 add_library(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 fea_set_compile_options(${PROJECT_NAME} PRIVATE)
 fea_release_profiling(${PROJECT_NAME})
-target_link_libraries(${PROJECT_NAME} PUBLIC fea_libs)
+target_link_libraries(${PROJECT_NAME} PUBLIC fea_libs ${TORCH_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PRIVATE TBB::TBB)
 
 # Interface
@@ -73,6 +78,13 @@ install(EXPORT ${PROJECT_NAME}_targets
 )
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/${INCLUDE_NAME}" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
+# Temp, copy torch dlls
+if (TORCH_DLLS)
+	message(STATUS "Torch : Found dlls, copying on build")
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TORCH_DLLS} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+	)
+endif()
 
 # Tests
 if (${FEA_ML_TESTS})
