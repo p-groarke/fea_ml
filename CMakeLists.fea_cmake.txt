@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.16)
+
+# Downloads the fea_cmake repo at provided git tag,
+# and includes it in your cmake.
+# This declares an option allowing you to work on a local repo.
+macro(fea_cmake_download TAG)
+	include(FetchContent)
+
+	# If the option is set, don't fetch the remote repository. Instead, use a local clone located in ../the-repo.
+	option(FEA_CMAKE_LOCAL "Use local fea_cmake repo. Searches for '../fea_cmake'" Off)
+
+	if (${FEA_CMAKE_LOCAL})
+		message(STATUS "Using local fea_cmake from '../fea_cmake'.")
+		set(FETCHCONTENT_SOURCE_DIR_FEA_CMAKE ${CMAKE_CURRENT_SOURCE_DIR}/../fea_cmake CACHE INTERNAL "")
+	endif()
+
+	FetchContent_Declare(fea_cmake
+		GIT_REPOSITORY https://github.com/p-groarke/fea_cmake.git
+		GIT_TAG ${TAG}
+	)
+	FetchContent_MakeAvailable(fea_cmake)
+
+	# And now include the helpers in this cmake file.
+	include(${fea_cmake_SOURCE_DIR}/CMakeLists.txt)
+endmacro()

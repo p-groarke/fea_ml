@@ -1,0 +1,16 @@
+[requires]
+gtest/1.11.0#7475482232fcd017fa110b0b8b0f936e
+onetbb/2021.3.0#1ebfd22e477857f16ac01ac7db7be347
+
+[generators]
+cmake_find_package_multi
+
+[options]
+gtest:build_gmock=False
+onetbb:tbbmalloc=True
+tbb:tbbmalloc=True
+
+[imports]
+bin, *.pdb -> ./bin
+bin, *.pdb -> ./lib
+bin, *.dll -> ./bin
