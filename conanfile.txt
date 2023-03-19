@@ -1,6 +1,7 @@
 [requires]
 gtest/1.11.0#7475482232fcd017fa110b0b8b0f936e
 onetbb/2021.3.0#1ebfd22e477857f16ac01ac7db7be347
+stb/cci.20220909#1c47474f095ef8cd9e4959558525b827
 
 [generators]
 cmake_find_package_multi

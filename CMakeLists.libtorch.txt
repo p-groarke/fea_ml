@@ -4,9 +4,9 @@ project(libtorch-download NONE)
 set(TORCH_DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/downloads)
 set(TORCH_VER "2.0.0")
 
-set(TORCH_COMPUTE "cpu")
+# set(TORCH_COMPUTE "cpu")
 # set(TORCH_COMPUTE "cu117")
-# set(TORCH_COMPUTE "cu118")
+set(TORCH_COMPUTE "cu118")
 
 set(TORCH_LINK "shared")
 # set(TORCH_LINK "static") # not up for 2.0?
@@ -15,7 +15,7 @@ set(TORCH_DEBUG "")
 # set(TORCH_DEBUG "debug-")
 
 set(TORCH_ZIPNAME "libtorch-win-${TORCH_LINK}-with-deps-${TORCH_DEBUG}${TORCH_VER}%2B${TORCH_COMPUTE}.zip")
-set(TORCH_URL "https://download.pytorch.org/libtorch/cpu/${TORCH_ZIPNAME}")
+set(TORCH_URL "https://download.pytorch.org/libtorch/${TORCH_COMPUTE}/${TORCH_ZIPNAME}")
 
 # set(TORCH_LIB_DIR "lib")
 set(TORCH_UNZIP_DIR "libtorch")

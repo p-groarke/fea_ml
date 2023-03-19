@@ -15,7 +15,7 @@ include(GoogleTest)
 option(FEA_ML_TESTS "Build and run tests." On)
 
 # Download fea_cmake and update download script if need be.
-fea_cmake_download(89ce8c2fcfc0247da8c27849552aea95ebcbaf05)
+fea_cmake_download(74fa0db40c972f6153ea54c5a27c594df085eefe)
 fea_import_fea_cmake_download()
 
 # Use fea clang-format file.
@@ -28,7 +28,7 @@ fea_import_gitignore()
 fea_set_output_dir(${CMAKE_BINARY_DIR}/bin)
 
 # C++20
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 # Set fea_libs options.
 if (${FEA_LIBS_LOCAL})
@@ -36,7 +36,7 @@ if (${FEA_LIBS_LOCAL})
 else()
 	set(FEA_TESTS Off CACHE INTERNAL "")  # Forces the value
 endif()
-set(FEA_CPP20 On CACHE INTERNAL "")  # Forces the value
+set(FEA_CPP17 On CACHE INTERNAL "")  # Forces the value
 
 # Pull fea_libs.
 fea_fetch_content(fea_libs
@@ -92,6 +92,7 @@ if (${FEA_ML_TESTS})
 
 	# Tests external dependencies.
 	find_package(GTest CONFIG REQUIRED QUIET)
+	find_package(stb CONFIG REQUIRED QUIET)
 
 	# Test Project
 	set(TEST_NAME ${PROJECT_NAME}_tests)
@@ -100,7 +101,7 @@ if (${FEA_ML_TESTS})
 
 	add_executable(${TEST_NAME} ${TEST_SOURCES})
 	fea_set_compile_options(${TEST_NAME} PRIVATE)
-	target_link_libraries(${TEST_NAME} PRIVATE ${PROJECT_NAME} GTest::GTest)
+	target_link_libraries(${TEST_NAME} PRIVATE ${PROJECT_NAME} GTest::GTest stb::stb)
 
 	gtest_discover_tests(${TEST_NAME})
 	# add_dependencies(${TEST_NAME} ${PROJECT_NAME})
